@@ -1,3 +1,8 @@
 [build-system]
 requires = ["setuptools>=70.0.0","wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+strict = true
+disallow_untyped_defs = true
+exclude = ["build/", "\\.venv/", "venv/", "setup.py"]

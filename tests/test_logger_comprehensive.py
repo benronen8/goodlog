@@ -490,8 +490,6 @@ def test_extra_logging_info_json_serialization_edge_cases() -> None:
 def test_configure_logging_json_validation() -> None:
     """Test that configure_logging validates JSON serialization"""
     from goodlogs.extra_info import ExtraLoggingInfo
-    import io
-    from unittest.mock import patch
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -549,7 +547,7 @@ def test_module_level_functions() -> None:
 
 def test_extra_info_context_manager_behavior() -> None:
     """Test extra_info_context covers both normal and exception exit paths (lines 17-21)."""
-    from goodlogs import add_ephemeral_info, remove_ephemeral_info, extra_info_context
+    from goodlogs import extra_info_context
     from goodlogs.extra_info import ExtraLoggingInfo
     ExtraLoggingInfo._instances.clear()
 
