@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from goodlogs import (
+from goodlog import (
     configure_logging,
     create_logger,
     add_ephemeral_info,
@@ -157,7 +157,7 @@ def test_logger_comprehensive_flow() -> None:
 def test_logger_context_isolation() -> None:
     """Test that extra contexts are properly isolated between operations"""
     # Reset ExtraLoggingInfo singleton for this test
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     ExtraLoggingInfo._instances.clear()
     
     captured_output = io.StringIO()
@@ -204,7 +204,7 @@ def test_logger_context_isolation() -> None:
 def test_logger_exception_handling() -> None:
     """Test that exception info and stack traces are properly logged"""
     # Reset singleton for clean test
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     ExtraLoggingInfo._instances.clear()
     
     captured_output = io.StringIO()
@@ -259,7 +259,7 @@ def test_logger_exception_handling() -> None:
 def test_logger_extra_fields() -> None:
     """Test that extra fields passed via logger.info(extra={...}) are included"""
     # Reset singleton for clean test
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     ExtraLoggingInfo._instances.clear()
     
     captured_output = io.StringIO()
@@ -301,7 +301,7 @@ def test_logger_extra_fields() -> None:
 def test_logger_file_location_info() -> None:
     """Test that file location info (pathname, lineno, function_name) is included"""
     # Reset singleton for clean test
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     ExtraLoggingInfo._instances.clear()
     
     captured_output = io.StringIO()
@@ -331,7 +331,7 @@ def test_logger_file_location_info() -> None:
 
 def test_extra_logging_info_singleton() -> None:
     """Test ExtraLoggingInfo singleton behavior"""
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -346,7 +346,7 @@ def test_extra_logging_info_singleton() -> None:
 
 def test_extra_logging_info_operations() -> None:
     """Test ExtraLoggingInfo add/remove operations"""
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -374,7 +374,7 @@ def test_extra_logging_info_operations() -> None:
 
 def test_extra_logging_info_overwrite_keys() -> None:
     """Test ExtraLoggingInfo behavior with duplicate keys"""
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -399,7 +399,7 @@ def test_extra_logging_info_overwrite_keys() -> None:
 
 def test_extra_logging_info_json_serialization_validation_init() -> None:
     """Test JSON serialization validation in ExtraLoggingInfo.__init__()"""
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -436,7 +436,7 @@ def test_extra_logging_info_json_serialization_validation_init() -> None:
 
 def test_extra_logging_info_json_serialization_validation_add_more_info() -> None:
     """Test JSON serialization validation in ExtraLoggingInfo.add_more_info()"""
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     import datetime
     
     # Reset singleton for clean test
@@ -461,7 +461,7 @@ def test_extra_logging_info_json_serialization_validation_add_more_info() -> Non
 
 def test_extra_logging_info_json_serialization_edge_cases() -> None:
     """Test JSON serialization validation edge cases"""
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     import uuid
     
     # Reset singleton for clean test
@@ -489,7 +489,7 @@ def test_extra_logging_info_json_serialization_edge_cases() -> None:
 
 def test_configure_logging_json_validation() -> None:
     """Test that configure_logging validates JSON serialization"""
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog.extra_info import ExtraLoggingInfo
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -513,8 +513,8 @@ def test_configure_logging_json_validation() -> None:
 
 def test_module_level_functions() -> None:
     """Test the new module-level convenience functions"""
-    from goodlogs.extra_info import ExtraLoggingInfo
-    from goodlogs import set_info, add_ephemeral_info, remove_ephemeral_info
+    from goodlog.extra_info import ExtraLoggingInfo
+    from goodlog import set_info, add_ephemeral_info, remove_ephemeral_info
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -547,8 +547,8 @@ def test_module_level_functions() -> None:
 
 def test_extra_info_context_manager_behavior() -> None:
     """Test extra_info_context covers both normal and exception exit paths (lines 17-21)."""
-    from goodlogs import extra_info_context
-    from goodlogs.extra_info import ExtraLoggingInfo
+    from goodlog import extra_info_context
+    from goodlog.extra_info import ExtraLoggingInfo
     ExtraLoggingInfo._instances.clear()
 
     # Normal exit
