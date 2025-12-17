@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - incorporate-docs  # temporary, remove after validation
     paths:
       - 'docs/**'
       - 'src/**'
       - 'requirements-docs.txt'
+      - '.github/workflows/docs-deploy.yml'
   workflow_dispatch:
 
 permissions:
