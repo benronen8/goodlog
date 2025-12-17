@@ -15,7 +15,7 @@ def configure_logging(
             "disable_existing_loggers": False,
             "formatters": {
                 "json_formatter": {
-                    "()": "goodlogs.formats.JSONFormatter",
+                    "()": "goodlog.formats.JSONFormatter",
                 }
             },
             "handlers": {
@@ -28,7 +28,7 @@ def configure_logging(
             },
             "filters": {
                 "context": {
-                    "()": "goodlogs.filters.ContextFilter"
+                    "()": "goodlog.filters.ContextFilter"
                 },
             },
             "root": {

@@ -3,7 +3,7 @@ import logging
 from collections import OrderedDict
 from unittest.mock import patch
 
-from goodlogs.formats import JSONFormatter, standard_log_record_attributes
+from goodlog.formats import JSONFormatter, standard_log_record_attributes
 
 
 def test_standard_log_record_attributes_caching() -> None:
