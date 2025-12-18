@@ -6,6 +6,7 @@ on:
       - main
 
 jobs:
+
   unit-tests:
     runs-on: ubuntu-latest
     steps:
@@ -55,6 +56,18 @@ jobs:
 
       - name: Run mypy
         run: mypy .
+
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Run Ruff Linter Check
+        run: uvx ruff check
 
   docs-build:
     runs-on: ubuntu-latest
