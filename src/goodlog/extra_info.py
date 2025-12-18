@@ -35,14 +35,16 @@ def remove_ephemeral_info() -> dict[str, Any]:
 
 class Singleton(type):
     _instances: dict[type, Any] = {}
+
     def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+            cls._instances[cls] = super(Singleton, cls).__call__(
+                *args, **kwargs
+            )
         return cls._instances[cls]
 
 
 class ExtraLoggingInfo(metaclass=Singleton):
-
     def __init__(self, **kwargs: Any) -> None:
         self._info = kwargs.copy() if kwargs else dict()
         self._more_info: dict[str, Any] = dict()
@@ -71,4 +73,6 @@ class ExtraLoggingInfo(metaclass=Singleton):
         try:
             json.dumps(d)
         except TypeError as e:
-            raise ValueError("The provided dict is not JSON-serializable") from e
+            raise ValueError(
+                "The provided dict is not JSON-serializable"
+            ) from e

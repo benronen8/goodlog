@@ -7,7 +7,9 @@ from goodlog.formats import JSONFormatter, standard_log_record_attributes
 
 
 def test_standard_log_record_attributes_caching() -> None:
-    """Test that standard_log_record_attributes uses LRU cache."""
+    """
+    Test that standard_log_record_attributes uses LRU cache.
+    """
     # First call should compute the result
     attrs1 = standard_log_record_attributes()
     # Second call should return cached result
@@ -18,16 +20,37 @@ def test_standard_log_record_attributes_caching() -> None:
 
     # Should contain standard LogRecord attributes
     expected_attrs = {
-        'name', 'msg', 'args', 'created', 'msecs', 'levelname', 'levelno',
-        'pathname', 'filename', 'module', 'exc_info', 'exc_text', 'stack_info',
-        'lineno', 'funcName', 'processName', 'process', 'threadName', 'thread',
-        'relativeCreated', 'getMessage', 'taskName'
+        "name",
+        "msg",
+        "args",
+        "created",
+        "msecs",
+        "levelname",
+        "levelno",
+        "pathname",
+        "filename",
+        "module",
+        "exc_info",
+        "exc_text",
+        "stack_info",
+        "lineno",
+        "funcName",
+        "processName",
+        "process",
+        "threadName",
+        "thread",
+        "relativeCreated",
+        "getMessage",
+        "taskName",
     }
-    # Check that most expected attributes are present (may vary by Python version)
+    # Check that most expected attributes are present
     assert len(attrs1.intersection(expected_attrs)) > 15
 
+
 def test_json_formatter_basic_fields() -> None:
-    """Test that JSONFormatter includes basic required fields."""
+    """
+    Test that JSONFormatter includes basic required fields.
+    """
     formatter = JSONFormatter()
 
     # Create a log record
@@ -38,7 +61,7 @@ def test_json_formatter_basic_fields() -> None:
         lineno=42,
         msg="Test message %s",
         args=("arg1",),
-        exc_info=None
+        exc_info=None,
     )
 
     # Format the record
@@ -53,8 +76,11 @@ def test_json_formatter_basic_fields() -> None:
     assert data["code_context"]["line_number"] == 42
     assert data["code_context"]["python_file_path"] == "/path/to/file.py"
 
+
 def test_json_formatter_field_ordering() -> None:
-    """Test that JSONFormatter maintains field order using OrderedDict."""
+    """
+    Test that JSONFormatter maintains field order using OrderedDict.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -64,7 +90,7 @@ def test_json_formatter_field_ordering() -> None:
         lineno=10,
         msg="Test",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     json_output = formatter.format(record)
@@ -79,8 +105,11 @@ def test_json_formatter_field_ordering() -> None:
     assert keys[2] == "log_level"
     assert keys[3] == "message"
 
+
 def test_json_formatter_funcname_handling() -> None:
-    """Test function_name field handling - should omit when <module>."""
+    """
+    Test function_name field handling - should omit when <module>.
+    """
     formatter = JSONFormatter()
 
     # Test with funcName = "<module>" (should be omitted)
@@ -92,7 +121,7 @@ def test_json_formatter_funcname_handling() -> None:
         msg="Test",
         args=(),
         exc_info=None,
-        func="<module>"  # This is the default
+        func="<module>",  # This is the default
     )
 
     json_output = formatter.format(record)
@@ -106,11 +135,14 @@ def test_json_formatter_funcname_handling() -> None:
     json_output = formatter.format(record)
     data = json.loads(json_output)
 
-    # funcName should be included when it's not "<module>" (field is named function_name)
+    # funcName should be included ub function_name when it's not "<module>"
     assert data["code_context"].get("function_name") == "my_function"
 
+
 def test_json_formatter_extra_info_field() -> None:
-    """Test that extra_info field is included when present."""
+    """
+    Test that extra_info field is included when present.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -120,7 +152,7 @@ def test_json_formatter_extra_info_field() -> None:
         lineno=1,
         msg="Test",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     # Add extra_info attribute
@@ -133,8 +165,11 @@ def test_json_formatter_extra_info_field() -> None:
     assert data["extra_info"]["request_id"] == "123"
     assert data["extra_info"]["user"] == "testuser"
 
+
 def test_json_formatter_exception_formatting() -> None:
-    """Test exception formatting in JSON output."""
+    """
+    Test exception formatting in JSON output.
+    """
     formatter = JSONFormatter()
 
     # Create an exception
@@ -142,6 +177,7 @@ def test_json_formatter_exception_formatting() -> None:
         raise ValueError("Test exception")
     except ValueError:
         import sys
+
         exc_info = sys.exc_info()
 
     record = logging.LogRecord(
@@ -151,7 +187,7 @@ def test_json_formatter_exception_formatting() -> None:
         lineno=1,
         msg="Error occurred",
         args=(),
-        exc_info=exc_info
+        exc_info=exc_info,
     )
 
     json_output = formatter.format(record)
@@ -161,8 +197,11 @@ def test_json_formatter_exception_formatting() -> None:
     assert "ValueError: Test exception" in data["exception"]
     assert "Traceback" in data["exception"]
 
+
 def test_json_formatter_stack_info() -> None:
-    """Test stack info field formatting."""
+    """
+    Test stack info field formatting.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -172,11 +211,13 @@ def test_json_formatter_stack_info() -> None:
         lineno=1,
         msg="Warning",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     # Add stack info
-    record.stack_info = "Stack trace:\n  File test.py, line 10\n    some_function()"
+    record.stack_info = (
+        "Stack trace:\n  File test.py, line 10\n    some_function()"
+    )
 
     json_output = formatter.format(record)
     data = json.loads(json_output)
@@ -185,8 +226,11 @@ def test_json_formatter_stack_info() -> None:
     assert "stack_info" in data
     assert "some_function()" in data["stack_info"]
 
+
 def test_json_formatter_exc_text_field() -> None:
-    """Test that exc_text field is included when present."""
+    """
+    Test that exc_text field is included when present.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -196,7 +240,7 @@ def test_json_formatter_exc_text_field() -> None:
         lineno=1,
         msg="Error",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     # Set exc_text (usually set by formatException)
@@ -208,8 +252,11 @@ def test_json_formatter_exc_text_field() -> None:
     assert "exc_text" in data
     assert data["exc_text"] == "Formatted exception text"
 
+
 def test_json_formatter_extra_fields_from_logrecord() -> None:
-    """Test that extra fields from LogRecord are included."""
+    """
+    Test that extra fields from LogRecord are included.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -219,7 +266,7 @@ def test_json_formatter_extra_fields_from_logrecord() -> None:
         lineno=1,
         msg="Test",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     # Add custom fields directly to the record (simulating extra={} parameter)
@@ -239,8 +286,11 @@ def test_json_formatter_extra_fields_from_logrecord() -> None:
     # None values should be filtered out
     assert "custom_field4" not in data
 
+
 def test_json_formatter_excludes_standard_attributes() -> None:
-    """Test that standard LogRecord attributes are not duplicated in extra fields."""
+    """
+    Test that standard LogRecord attributes are not duplicated in extra fields.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -250,7 +300,7 @@ def test_json_formatter_excludes_standard_attributes() -> None:
         lineno=1,
         msg="Test",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     # Add a custom field that shouldn't conflict
@@ -268,10 +318,18 @@ def test_json_formatter_excludes_standard_attributes() -> None:
     for key in data.keys():
         if key in standard_attrs:
             # These are explicitly handled fields
-            assert key in ["python_file_path", "lineno", "exc_text", "function_name"]
+            assert key in [
+                "python_file_path",
+                "lineno",
+                "exc_text",
+                "function_name",
+            ]
+
 
 def test_json_formatter_with_all_fields() -> None:
-    """Test JSONFormatter with all possible fields populated."""
+    """
+    Test JSONFormatter with all possible fields populated.
+    """
     formatter = JSONFormatter()
 
     # Create exception info
@@ -279,6 +337,7 @@ def test_json_formatter_with_all_fields() -> None:
         raise RuntimeError("Test error")
     except RuntimeError:
         import sys
+
         exc_info = sys.exc_info()
 
     record = logging.LogRecord(
@@ -289,7 +348,7 @@ def test_json_formatter_with_all_fields() -> None:
         msg="Comprehensive test with %s",
         args=("everything",),
         exc_info=exc_info,
-        func="test_function"
+        func="test_function",
     )
 
     # Add all optional fields
@@ -306,7 +365,9 @@ def test_json_formatter_with_all_fields() -> None:
     assert data["log_level"] == "ERROR"
     assert data["message"] == "Comprehensive test with everything"
     assert data["logger_name"] == "test.comprehensive"
-    assert data["code_context"]["python_file_path"] == "/path/to/comprehensive.py"
+    assert (
+        data["code_context"]["python_file_path"] == "/path/to/comprehensive.py"
+    )
     assert data["code_context"]["line_number"] == 999
     assert data["code_context"]["function_name"] == "test_function"
     assert "timestamp" in data
@@ -321,8 +382,11 @@ def test_json_formatter_with_all_fields() -> None:
     assert data["custom_field"] == "custom_value"
     assert data["another_field"] == [1, 2, 3]
 
+
 def test_json_formatter_time_formatting() -> None:
-    """Test that timestamp is properly formatted."""
+    """
+    Test that timestamp is properly formatted.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -332,11 +396,13 @@ def test_json_formatter_time_formatting() -> None:
         lineno=1,
         msg="Test",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     # Mock formatTime to verify it's called
-    with patch.object(formatter, 'formatTime', return_value='2024-01-01 12:00:00') as mock_format_time:
+    with patch.object(
+        formatter, "formatTime", return_value="2024-01-01 12:00:00"
+    ) as mock_format_time:
         json_output = formatter.format(record)
         data = json.loads(json_output)
 
@@ -344,10 +410,13 @@ def test_json_formatter_time_formatting() -> None:
         mock_format_time.assert_called_once_with(record)
 
         # Verify the timestamp in the output
-        assert data["timestamp"] == '2024-01-01 12:00:00'
+        assert data["timestamp"] == "2024-01-01 12:00:00"
+
 
 def test_json_formatter_none_values_filtered() -> None:
-    """Test that None values are filtered out from output."""
+    """
+    Test that None values are filtered out from output.
+    """
     formatter = JSONFormatter()
 
     record = logging.LogRecord(
@@ -357,7 +426,7 @@ def test_json_formatter_none_values_filtered() -> None:
         lineno=1,
         msg="Test",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     # Add fields with None values
@@ -379,8 +448,11 @@ def test_json_formatter_none_values_filtered() -> None:
     assert data.get("empty_string") == ""
     assert data.get("false_field") is False
 
+
 def test_json_formatter_message_formatting() -> None:
-    """Test that getMessage() is used for message formatting."""
+    """
+    Test that getMessage() is used for message formatting.
+    """
     formatter = JSONFormatter()
 
     # Test with args
@@ -391,7 +463,7 @@ def test_json_formatter_message_formatting() -> None:
         lineno=1,
         msg="Hello %s, count: %d",
         args=("World", 42),
-        exc_info=None
+        exc_info=None,
     )
 
     json_output = formatter.format(record)
@@ -408,7 +480,7 @@ def test_json_formatter_message_formatting() -> None:
         lineno=1,
         msg="Simple message",
         args=(),
-        exc_info=None
+        exc_info=None,
     )
 
     json_output2 = formatter.format(record2)
@@ -418,7 +490,9 @@ def test_json_formatter_message_formatting() -> None:
 
 
 def test_json_formatter_with_logger() -> None:
-    """Test JSONFormatter integration with Python logger."""
+    """
+    Test JSONFormatter integration with Python logger.
+    """
     import io
 
     # Create a logger with JSONFormatter
@@ -446,7 +520,7 @@ def test_json_formatter_with_logger() -> None:
 
         # Get the output
         output = stream.getvalue()
-        lines = output.strip().split('\n')
+        lines = output.strip().split("\n")
 
         # Verify each line is valid JSON
         for line in lines:
