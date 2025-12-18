@@ -513,8 +513,8 @@ def test_configure_logging_json_validation() -> None:
 
 def test_module_level_functions() -> None:
     """Test the new module-level convenience functions"""
-    from goodlog.extra_info import ExtraLoggingInfo
-    from goodlog import set_info, add_ephemeral_info, remove_ephemeral_info
+    from goodlog.extra_info import ExtraLoggingInfo, set_info
+    from goodlog import add_ephemeral_info, remove_ephemeral_info
     
     # Reset singleton for clean test
     ExtraLoggingInfo._instances.clear()
@@ -566,3 +566,14 @@ def test_extra_info_context_manager_behavior() -> None:
         pass
     # After context, baz should be removed
     assert "baz" not in ExtraLoggingInfo().as_dict()
+
+
+def test_configure_logging_without_extra_info() -> None:
+    """Test that configure_logging works when called without extra_info."""
+    from goodlog.extra_info import ExtraLoggingInfo
+    ExtraLoggingInfo._instances.clear()
+    
+    # Call configure_logging without passing extra_info (covers: if extra_info is None)
+    configure_logging()
+    
+    assert ExtraLoggingInfo().as_dict() == {}

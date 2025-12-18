@@ -1,15 +1,16 @@
-from logging.config import dictConfig as _configure_logging
+from logging.config import dictConfig
 from typing import Any
 
 from .extra_info import set_info
 
 
 def configure_logging(
-        extra_info: dict[str, Any],
+        extra_info: dict[str, Any] = None,
 ) -> None:
+    if extra_info is None:
+        extra_info = {}
     set_info(**extra_info)
-
-    _configure_logging(
+    dictConfig(
         config={
             "version": 1,
             "disable_existing_loggers": False,
