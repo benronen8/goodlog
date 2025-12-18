@@ -41,7 +41,8 @@ class JSONFormatter(logging.Formatter):
             if value is not None:
                 dict_record[field] = value
 
-        # Add any extra fields from LogRecord.__dict__ (like those passed via extra= parameter)
+        # Add any extra fields from LogRecord.__dict__
+        # (like those passed via extra= parameter)
         exclude = set(dict_record.keys())
         exclude.update(standard_log_record_attributes())
         for key, value in record.__dict__.items():

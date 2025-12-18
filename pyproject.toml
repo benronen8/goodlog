@@ -6,3 +6,11 @@ build-backend = "setuptools.build_meta"
 strict = true
 disallow_untyped_defs = true
 exclude = ["build/", "\\.venv/", "venv/", "setup.py"]
+
+[tool.ruff]
+line-length = 80
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]  # pycodestyle errors/warnings + pyflakes
+[pycodestyle]
+max-line-length = 80
