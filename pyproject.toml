@@ -11,6 +11,6 @@ exclude = ["build/", "\\.venv/", "venv/", "setup.py"]
 line-length = 80
 
 [tool.ruff.lint]
-select = ["E", "F", "W"]  # pycodestyle errors/warnings + pyflakes
+select = ["E", "F", "W"]
 [pycodestyle]
 max-line-length = 80

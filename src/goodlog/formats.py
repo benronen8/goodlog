@@ -6,8 +6,6 @@ from typing import Any
 
 
 class JSONFormatter(logging.Formatter):
-    def __init__(self) -> None:
-        super().__init__()
 
     def format(self, record: logging.LogRecord) -> str:
         # fields to always include (always expected to exist)
@@ -44,7 +42,7 @@ class JSONFormatter(logging.Formatter):
         # Add any extra fields from LogRecord.__dict__
         # (like those passed via extra= parameter)
         exclude = set(dict_record.keys())
-        exclude.update(standard_log_record_attributes())
+        exclude.update(_standard_log_record_attributes())
         for key, value in record.__dict__.items():
             if key not in exclude and value is not None:
                 dict_record[key] = value
@@ -53,7 +51,7 @@ class JSONFormatter(logging.Formatter):
 
 
 @functools.lru_cache
-def standard_log_record_attributes() -> set[str]:
+def _standard_log_record_attributes() -> set[str]:
     return set(
         logging.LogRecord(
             name="dummy", level=logging.INFO, pathname="", lineno=0,

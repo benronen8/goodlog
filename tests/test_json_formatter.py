@@ -3,7 +3,7 @@ import logging
 from collections import OrderedDict
 from unittest.mock import patch
 
-from goodlog.formats import JSONFormatter, standard_log_record_attributes
+from goodlog.formats import JSONFormatter, _standard_log_record_attributes
 
 
 def test_standard_log_record_attributes_caching() -> None:
@@ -11,9 +11,9 @@ def test_standard_log_record_attributes_caching() -> None:
     Test that standard_log_record_attributes uses LRU cache.
     """
     # First call should compute the result
-    attrs1 = standard_log_record_attributes()
+    attrs1 = _standard_log_record_attributes()
     # Second call should return cached result
-    attrs2 = standard_log_record_attributes()
+    attrs2 = _standard_log_record_attributes()
 
     # Should be the same object due to caching
     assert attrs1 is attrs2
@@ -314,7 +314,7 @@ def test_json_formatter_excludes_standard_attributes() -> None:
 
     # Standard attributes shouldn't be duplicated
     # (they're either in specific fields or excluded)
-    standard_attrs = standard_log_record_attributes()
+    standard_attrs = _standard_log_record_attributes()
     for key in data.keys():
         if key in standard_attrs:
             # These are explicitly handled fields

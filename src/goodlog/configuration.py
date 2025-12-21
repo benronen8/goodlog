@@ -1,15 +1,15 @@
 from logging.config import dictConfig
 from typing import Any
 
-from .extra_info import set_info
+from .extra_info.store import set_info
 
 
 def configure_logging(
-    extra_info: dict[str, Any] | None = None,
+    global_extra_info: dict[str, Any] | None = None,
 ) -> None:
-    if extra_info is None:
-        extra_info = {}
-    set_info(**extra_info)
+    if global_extra_info is None:
+        global_extra_info = {}
+    set_info(**global_extra_info)
     dictConfig(
         config={
             "version": 1,
