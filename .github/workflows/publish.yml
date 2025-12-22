@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (e.g., v0.2.0). If empty, uses the workflow ref."
+        required: false
+        type: string
 
 jobs:
   ci:
@@ -19,6 +25,8 @@ jobs:
         with:
           # setuptools-scm needs tags/history to derive the version correctly
           fetch-depth: 0
+          # If this run is dispatched by the Release workflow, build from that tag.
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
