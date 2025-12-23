@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "goodlog"
 dynamic = ["version"]
 description = "Do natural python logging in a natural manner"
+readme = "README.md"
 authors = [{ name = "Ben Ronen" }]
 keywords = ["log", "logs", "logger", "logging", "utilities", "utils"]
 requires-python = ">=3.10,<4"
@@ -22,6 +23,8 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/benronen8/goodlog"
 Documentation = "https://benronen8.github.io/goodlog"
+Source = "https://github.com/benronen8/goodlog"
+Issues = "https://github.com/benronen8/goodlog/issues"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
