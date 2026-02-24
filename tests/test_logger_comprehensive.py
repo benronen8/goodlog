@@ -10,6 +10,12 @@ from goodlog import (
     add,
     remove,
 )
+from goodlog.extra_info.store import _ExtraLoggingInfo, _ephemeral_info
+
+
+def _reset_store() -> None:
+    _ExtraLoggingInfo._instances.clear()
+    _ephemeral_info.set({})
 
 
 def test_logger_comprehensive_flow() -> None:
@@ -20,7 +26,7 @@ def test_logger_comprehensive_flow() -> None:
     3. Global and extra context inclusion in log records
     4. Logging with and without extra data
     """
-    # Capture stdout to verify JSON output
+    _reset_store()
     captured_output = io.StringIO()
 
     with patch("sys.stdout", captured_output):
@@ -169,9 +175,7 @@ def test_logger_context_isolation() -> None:
     Test that extra contexts are properly isolated between operations
     """
     # Reset _ExtraLoggingInfo singleton for this test
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     captured_output = io.StringIO()
 
@@ -218,10 +222,7 @@ def test_logger_exception_handling() -> None:
     """
     Test that exception info and stack traces are properly logged
     """
-    # Reset singleton for clean test
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     captured_output = io.StringIO()
 
@@ -276,10 +277,7 @@ def test_logger_extra_fields() -> None:
     """
     Test that extra fields passed via logger.info(extra={...}) are included
     """
-    # Reset singleton for clean test
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     captured_output = io.StringIO()
 
@@ -321,10 +319,7 @@ def test_logger_file_location_info() -> None:
     """
     Test that file location info (pathname, lineno, function_name) is included
     """
-    # Reset singleton for clean test
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     captured_output = io.StringIO()
 
@@ -361,10 +356,7 @@ def test_extra_logging_info_singleton() -> None:
     """
     Test _ExtraLoggingInfo singleton behavior
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Test singleton behavior
     info1 = _ExtraLoggingInfo(key1="value1")
@@ -378,10 +370,7 @@ def test_extra_logging_info_operations() -> None:
     """
     Test _ExtraLoggingInfo add/remove operations
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     info = _ExtraLoggingInfo(base_key="base_value")
 
@@ -408,10 +397,7 @@ def test_extra_logging_info_overwrite_keys() -> None:
     """
     Test _ExtraLoggingInfo behavior with duplicate keys
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     captured_output = io.StringIO()
 
@@ -435,10 +421,7 @@ def test_extra_logging_info_json_serialization_validation_init() -> None:
     """
     Test JSON serialization validation in _ExtraLoggingInfo.__init__()
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Test with valid JSON-serializable data
     info = _ExtraLoggingInfo(
@@ -459,8 +442,7 @@ def test_extra_logging_info_json_serialization_validation_init() -> None:
     }
     assert info.as_dict() == expected_data
 
-    # Reset for next test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Test with non-JSON-serializable data (function object)
     def some_function() -> None:
@@ -478,11 +460,9 @@ def test_extra_logging_info_json_serialization_validation_add_more_info() -> (
     """
     Test JSON serialization validation in _ExtraLoggingInfo.add_more_info()
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
     import datetime
 
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Create instance with valid data
     info = _ExtraLoggingInfo(base_key="base_value")
@@ -511,11 +491,9 @@ def test_extra_logging_info_json_serialization_edge_cases() -> None:
     """
     Test JSON serialization validation edge cases
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
     import uuid
 
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Test with various non-serializable objects
     test_cases = [
@@ -532,15 +510,14 @@ def test_extra_logging_info_json_serialization_edge_cases() -> None:
     ]
 
     for invalid_kwargs, description in test_cases:
-        _ExtraLoggingInfo._instances.clear()  # Reset for each test
+        _reset_store()
 
         with pytest.raises(
             ValueError, match="The provided dict is not JSON-serializable"
         ):
             _ExtraLoggingInfo(**invalid_kwargs)  # type: ignore
 
-    # Test that empty kwargs is valid
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
     info = _ExtraLoggingInfo()  # Should not raise
     assert info.as_dict() == {}
 
@@ -549,17 +526,13 @@ def test_configure_logging_json_validation() -> None:
     """
     Test that configure_logging validates JSON serialization
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Test with valid data
     valid_config = {"service": "test", "version": "1.0"}
     configure_logging(valid_config)  # Should not raise
 
-    # Reset for invalid test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Test with invalid data
     def invalid_function() -> None:
@@ -577,11 +550,9 @@ def test_module_level_functions() -> None:
     """
     Test the new module-level convenience functions
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo, set_info
-    from goodlog import add, remove
+    from goodlog.extra_info.store import set_info
 
-    # Reset singleton for clean test
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Test set_info
     set_info(service="test-service", version="1.0")
@@ -614,9 +585,8 @@ def test_extra_info_context_manager_behavior() -> None:
     Test extra_info_context covers both normal and exception exit paths.
     """
     from goodlog import ephemeral_info_context
-    from goodlog.extra_info.store import _ExtraLoggingInfo
 
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     # Normal exit
     with ephemeral_info_context(foo="bar"):
@@ -639,9 +609,7 @@ def test_configure_logging_without_extra_info() -> None:
     """
     Test that configure_logging works when called without extra_info.
     """
-    from goodlog.extra_info.store import _ExtraLoggingInfo
-
-    _ExtraLoggingInfo._instances.clear()
+    _reset_store()
 
     configure_logging()
 
