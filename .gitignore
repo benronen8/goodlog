@@ -12,3 +12,5 @@ wheels/
 venv
 
 docs/_build/
+
+scratch/

@@ -1,8 +1,13 @@
+import contextvars
 import json
 import logging
 from typing import Any
 
 logger = logging.getLogger(__name__)
+
+_ephemeral_info: contextvars.ContextVar[dict[str, Any]] = (
+    contextvars.ContextVar("_ephemeral_info", default={})
+)
 
 
 def set_info(**kwargs: Any) -> None:
@@ -27,11 +32,10 @@ class _Singleton(type):
 class _ExtraLoggingInfo(metaclass=_Singleton):
     def __init__(self, **kwargs: Any) -> None:
         self._info = kwargs.copy() if kwargs else dict()
-        self._more_info: dict[str, Any] = dict()
         self._validate_serialization(self._info)
 
     def as_dict(self) -> dict[str, Any]:
-        return {**self._info, **self._more_info}
+        return {**self._info, **_ephemeral_info.get()}
 
     def add_more_info(self, **kwargs: Any) -> None:
         """
@@ -39,14 +43,15 @@ class _ExtraLoggingInfo(metaclass=_Singleton):
         `remove_more_info` method.
         """
         self._validate_serialization(kwargs)
-        self._more_info.update(**kwargs)
+        _ephemeral_info.set({**_ephemeral_info.get(), **kwargs})
 
     def remove_more_info(self) -> dict[str, Any]:
         """
         Remove info that weren't provided in initialization but added later.
         """
-        removed_info, self._more_info = self._more_info, dict()
-        return removed_info
+        removed = _ephemeral_info.get()
+        _ephemeral_info.set({})
+        return removed
 
     @classmethod
     def _validate_serialization(cls, d: dict[str, Any]) -> None:
